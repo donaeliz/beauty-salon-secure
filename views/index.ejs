@@ -1,64 +1,48 @@
 <!DOCTYPE html>
 <html>
-
 <% include header.ejs %>
 
-<body class="hold-transition login-page">
-    <div class="login-box">
-        <div class="login-logo">
-            <a href="#">Vuln<b>Node</b>App
-        </div>
-        <!-- /.login-logo -->
-        <div class="card">
-            <div class="card-body login-card-body">
-                <p class="login-box-msg">Sign in to start your session</p>
-                <form action="/?default=English" method="post">
-                    <div class="input-group mb-3">
-                        <input type="email" name="username" class="form-control" placeholder="Email">
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-envelope"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="input-group mb-3">
-                        <input type="password" name="password" class="form-control" placeholder="Password">
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-lock"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <p class="text-danger"><%= message %></p>
-                    <div class="row">
-                        <div class="col-8">
-                        </div>
-                        <!-- /.col -->
-                        <div class="col-4">
-                            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
-                        </div>
-                        <!-- /.col -->
-                    </div>
-                </form>
+<body style="margin:0; font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #f8e1e7 0%, #fce4ec 100%); min-height:100vh; display:flex; align-items:center; justify-content:center;">
 
-                <p class="mb-1">
-                    <a href="/forgot-password">I forgot my password</a><br>
-                    <a href="/register">Don't have account, Register here</a>
-                </p>
-
-            </div>
-            <!-- /.login-card-body -->
-        </div>
+  <div style="background:white; border-radius:16px; padding:40px; width:100%; max-width:400px; box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
+    
+    <!-- Logo -->
+    <div style="text-align:center; margin-bottom:30px;">
+      <div style="font-size:40px;">💅</div>
+      <h1 style="color:#c2185b; font-size:24px; margin:8px 0 4px;">Glow Beauty Salon</h1>
+      <p style="color:#999; font-size:13px; margin:0;">Sign in to your account</p>
     </div>
-    <!-- /.login-box -->
 
-    <!-- jQuery -->
-    <script src="/plugins/jquery/jquery.min.js"></script>
-    <!-- Bootstrap 4 -->
-    <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <!-- AdminLTE App -->
-    <script src="/javascripts/adminlte.min.js"></script>
+    <!-- Error message -->
+    <p style="color:red; text-align:center; font-size:13px;"><%=message %></p>
+
+    <!-- Login Form -->
+    <form action="/?default=English" method="post">
+      
+      <div style="margin-bottom:16px;">
+        <label style="font-size:13px; color:#555; display:block; margin-bottom:6px;">Email</label>
+        <input type="email" name="username" placeholder="Enter your email"
+          style="width:100%; padding:10px 14px; border:1px solid #e0e0e0; border-radius:8px; font-size:14px; outline:none; box-sizing:border-box;">
+      </div>
+
+      <div style="margin-bottom:24px;">
+        <label style="font-size:13px; color:#555; display:block; margin-bottom:6px;">Password</label>
+        <input type="password" name="password" placeholder="Enter your password"
+          style="width:100%; padding:10px 14px; border:1px solid #e0e0e0; border-radius:8px; font-size:14px; outline:none; box-sizing:border-box;">
+      </div>
+
+      <button type="submit"
+        style="width:100%; padding:12px; background:#c2185b; color:white; border:none; border-radius:8px; font-size:15px; font-weight:600; cursor:pointer;">
+        Sign In
+      </button>
+
+    </form>
+
+    <div style="text-align:center; margin-top:20px;">
+      <a href="/register" style="color:#c2185b; font-size:13px; text-decoration:none;">Don't have an account? Register here</a>
+    </div>
+
+  </div>
 
 </body>
-
 </html>
