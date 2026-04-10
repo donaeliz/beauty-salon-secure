@@ -1,6 +1,6 @@
 exports.isAuthenticated = function (req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    return res.render('index', { message: "" });
-}
+  if (req.session && req.session.user) {
+    return next();
+  }
+  return res.render('index', { message: "" });
+};

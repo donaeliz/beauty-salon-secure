@@ -1,78 +1,127 @@
 <!DOCTYPE html>
 <html>
+<body style="margin:0; font-family:'Segoe UI',sans-serif; background:#fce4ec; min-height:100vh;">
 
-<% include header.ejs %>
-
-<body class="hold-transition sidebar-mini">
-    <!-- Site wrapper -->
-    <div class="wrapper">
-        <!-- Navbar -->
-        <% include body-header.ejs %>
-        <!-- /.navbar -->
-
-        <!-- Main Sidebar Container -->
-        <% include navigation.ejs %>
-
-        <!-- Content Wrapper. Contains page content -->
-        <div class="content-wrapper">
-            <!-- Content Header (Page header) -->
-            <section class="content-header">
-                <div class="container-fluid">
-                    <div class="row mb-2">
-                        <div class="col-sm-6">
-                            <h1>Welcome <%= fullName %></h1>
-                        </div>
-                        <div class="col-sm-6">
-                            <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                                <li class="breadcrumb-item active">Dashboard</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div><!-- /.container-fluid -->
-            </section>
-
-            <!-- Main content -->
-            <section class="content">
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="card card-primary">
-
-                            <div class="card-body">
-
-                                <div class="col-md-12">
-                                    <p>This is a test application made using node.js, express server and ejs template
-                                        engine.</p>
-                                    <p>This application is meant for educational purposes only. </p>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- /.card -->
-                    </div>
-                </div>
-            </section>
-            <!-- /.content -->
-        </div>
-        <!-- /.content-wrapper -->
-
-
-
-        <!-- Control Sidebar -->
-        <aside class="control-sidebar control-sidebar-dark">
-            <!-- Control sidebar content goes here -->
-        </aside>
-        <!-- /.control-sidebar -->
+  <!-- Navbar -->
+  <div style="background:#c2185b; padding:14px 30px; display:flex; justify-content:space-between; align-items:center;">
+    <span style="color:white; font-size:20px; font-weight:600;">💅 Glow Beauty Salon</span>
+    <div>
+      <span style="color:white; margin-right:16px;">👤 <%= user.fullname %></span>
+      <a href="/logout" style="background:white; color:#c2185b; padding:6px 14px; border-radius:6px; text-decoration:none; font-weight:600;">Logout</a>
     </div>
-    <!-- ./wrapper -->
+  </div>
 
-    <!-- jQuery -->
-    <script src="/plugins/jquery/jquery.min.js"></script>
-    <!-- Bootstrap 4 -->
-    <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <!-- AdminLTE App -->
-    <script src="/javascripts/adminlte.min.js"></script>
-    <!-- AdminLTE for demo purposes -->
-    <script src="/javascripts/demo.js"></script>
+  <div style="padding:30px; max-width:900px; margin:auto;">
+
+    <!-- Welcome -->
+    <h2 style="color:#c2185b;">Welcome, <%= user.fullname %>! 
+      <span style="font-size:14px; background:#c2185b; color:white; padding:3px 10px; border-radius:99px; margin-left:8px;"><%= user.role %></span>
+    </h2>
+
+    <!-- CUSTOMER VIEW -->
+    <% if (user.role === 'customer') { %>
+
+      <!-- Book Appointment -->
+      <div style="background:white; border-radius:12px; padding:24px; margin-top:20px; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+        <h3 style="color:#c2185b; margin-bottom:16px;">📅 Book an Appointment</h3>
+        <form action="/book-appointment" method="POST" style="display:flex; gap:12px; flex-wrap:wrap;">
+          <select name="service" style="padding:10px; border:1px solid #e0e0e0; border-radius:8px; flex:1;">
+            <% services.forEach(s => { %>
+              <option value="<%= s.name %>"><%= s.name %> - <%= s.price %></option>
+            <% }) %>
+          </select>
+          <input type="date" name="date" style="padding:10px; border:1px solid #e0e0e0; border-radius:8px; flex:1;">
+          <button type="submit" style="background:#c2185b; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;">Book</button>
+        </form>
+      </div>
+
+      <!-- My Appointments -->
+      <div style="background:white; border-radius:12px; padding:24px; margin-top:20px; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+        <h3 style="color:#c2185b; margin-bottom:16px;">📋 My Appointments</h3>
+        <% if (appointments.length === 0) { %>
+          <p style="color:#999;">No appointments yet.</p>
+        <% } else { %>
+          <table style="width:100%; border-collapse:collapse;">
+            <tr style="background:#fce4ec;">
+              <th style="padding:10px; text-align:left;">Service</th>
+              <th style="padding:10px; text-align:left;">Date</th>
+              <th style="padding:10px; text-align:left;">Status</th>
+              <th style="padding:10px; text-align:left;">Action</th>
+            </tr>
+            <% appointments.forEach(a => { %>
+            <tr style="border-bottom:1px solid #f0f0f0;">
+              <td style="padding:10px;"><%= a.service %></td>
+              <td style="padding:10px;"><%= a.date %></td>
+              <td style="padding:10px;"><%= a.status %></td>
+              <td style="padding:10px;">
+                <form action="/cancel-appointment" method="POST" style="display:inline;">
+                  <input type="hidden" name="id" value="<%= a.id %>">
+                  <button type="submit" style="background:#e53935; color:white; border:none; padding:4px 12px; border-radius:6px; cursor:pointer;">Cancel</button>
+                </form>
+              </td>
+            </tr>
+            <% }) %>
+          </table>
+        <% } %>
+      </div>
+
+    <!-- ADMIN VIEW -->
+    <% } else if (user.role === 'admin') { %>
+
+      <!-- Manage Services -->
+      <div style="background:white; border-radius:12px; padding:24px; margin-top:20px; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+        <h3 style="color:#c2185b; margin-bottom:16px;">✂️ Manage Services</h3>
+        <form action="/add-service" method="POST" style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px;">
+          <input type="text" name="name" placeholder="Service name" style="padding:10px; border:1px solid #e0e0e0; border-radius:8px; flex:1;">
+          <input type="text" name="price" placeholder="Price (e.g €30)" style="padding:10px; border:1px solid #e0e0e0; border-radius:8px; flex:1;">
+          <input type="text" name="duration" placeholder="Duration (e.g 30 mins)" style="padding:10px; border:1px solid #e0e0e0; border-radius:8px; flex:1;">
+          <button type="submit" style="background:#c2185b; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;">Add</button>
+        </form>
+        <table style="width:100%; border-collapse:collapse;">
+          <tr style="background:#fce4ec;">
+            <th style="padding:10px; text-align:left;">Service</th>
+            <th style="padding:10px; text-align:left;">Price</th>
+            <th style="padding:10px; text-align:left;">Duration</th>
+            <th style="padding:10px; text-align:left;">Action</th>
+          </tr>
+          <% services.forEach(s => { %>
+          <tr style="border-bottom:1px solid #f0f0f0;">
+            <td style="padding:10px;"><%= s.name %></td>
+            <td style="padding:10px;"><%= s.price %></td>
+            <td style="padding:10px;"><%= s.duration %></td>
+            <td style="padding:10px;">
+              <form action="/delete-service" method="POST" style="display:inline;">
+                <input type="hidden" name="id" value="<%= s.id %>">
+                <button type="submit" style="background:#e53935; color:white; border:none; padding:4px 12px; border-radius:6px; cursor:pointer;">Delete</button>
+              </form>
+            </td>
+          </tr>
+          <% }) %>
+        </table>
+      </div>
+
+      <!-- All Bookings -->
+      <div style="background:white; border-radius:12px; padding:24px; margin-top:20px; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+        <h3 style="color:#c2185b; margin-bottom:16px;">📋 All Appointments</h3>
+        <table style="width:100%; border-collapse:collapse;">
+          <tr style="background:#fce4ec;">
+            <th style="padding:10px; text-align:left;">User ID</th>
+            <th style="padding:10px; text-align:left;">Service</th>
+            <th style="padding:10px; text-align:left;">Date</th>
+            <th style="padding:10px; text-align:left;">Status</th>
+          </tr>
+          <% appointments.forEach(a => { %>
+          <tr style="border-bottom:1px solid #f0f0f0;">
+            <td style="padding:10px;"><%= a.user_id %></td>
+            <td style="padding:10px;"><%= a.service %></td>
+            <td style="padding:10px;"><%= a.date %></td>
+            <td style="padding:10px;"><%= a.status %></td>
+          </tr>
+          <% }) %>
+        </table>
+      </div>
+
+    <% } %>
+  </div>
 </body>
-
 </html>
