@@ -1,5 +1,6 @@
 const UsersModel = require("../models/usersModel");
 const db = require("../database");
+const bcrypt = require("bcrypt");
 const usersModel = new UsersModel();
 
 exports.renderDashboard = (req, res) => {
@@ -17,13 +18,17 @@ exports.renderDashboard = (req, res) => {
   }
 };
 
-exports.authenticate = (req, res) => {
+exports.authenticate = async (req, res) => {
   const { username, password } = req.body;
-  const result = usersModel.authenticateUser([username, password]);
-  if (result && result.length > 0) {
-    req.session.user = result[0];
-    return res.redirect("/dashboard");
-  } else {
+  try {
+    const user = db.prepare("SELECT * FROM users WHERE email = ?").get(username);
+    if (user && await bcrypt.compare(password, user.password)) {
+      req.session.user = user;
+      return res.redirect("/dashboard");
+    } else {
+      return res.render("index", { message: "Invalid email or password" });
+    }
+  } catch (err) {
     return res.render("index", { message: "Invalid email or password" });
   }
 };
@@ -32,10 +37,11 @@ exports.viewRegister = (req, res) => {
   res.render("register", { message: "" });
 };
 
-exports.registerUser = (req, res) => {
+exports.registerUser = async (req, res) => {
   const { fullname, username, email, password } = req.body;
   try {
-    usersModel.registerUser(fullname, username, email, password);
+    const hashedPassword = await bcrypt.hash(password, 10);
+    usersModel.registerUser(fullname, username, email, hashedPassword);
     res.render("index", { message: "Registration successful! Please login." });
   } catch (err) {
     res.render("register", { message: "Registration failed. Try again." });
