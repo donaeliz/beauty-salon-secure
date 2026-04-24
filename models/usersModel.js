@@ -1,16 +1,20 @@
 const db = require("../database");
 
 class UsersModel {
-  // FIXED: parameterized queries prevent SQL injection
+  // VULNERABLE: SQL Injection - string concatenation
   authenticateUser(parameter) {
     const email = parameter[0];
     const password = parameter[1];
-    const result = db.prepare(
-      "SELECT * FROM users WHERE email = ? AND password = ?"
-    ).all(email, password);
-    return result;
+    const query = `SELECT * FROM users WHERE email = '${email}' AND password = '${password}'`;
+    try {
+      const result = db.prepare(query).all();
+      return result;
+    } catch(err) {
+      return [];
+    }
   }
 
+  // VULNERABLE: plaintext password storage
   registerUser(fullname, username, email, password) {
     return db.prepare(
       "INSERT INTO users (fullname, username, email, password, role) VALUES (?, ?, ?, ?, ?)"

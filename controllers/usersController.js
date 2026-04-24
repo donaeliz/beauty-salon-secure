@@ -1,7 +1,5 @@
 const UsersModel = require("../models/usersModel");
 const db = require("../database");
-const bcrypt = require("bcrypt");
-const { body, validationResult } = require("express-validator");
 const usersModel = new UsersModel();
 
 exports.renderDashboard = (req, res) => {
@@ -19,52 +17,27 @@ exports.renderDashboard = (req, res) => {
   }
 };
 
-exports.validateLogin = [
-  body("username").isEmail().withMessage("Please enter a valid email"),
-  body("password").notEmpty().withMessage("Password is required")
-    .isLength({ min: 6 }).withMessage("Password must be at least 6 characters")
-];
-
-exports.authenticate = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.render("index", { message: errors.array()[0].msg });
-  }
+// VULNERABLE: no input validation
+exports.authenticate = (req, res) => {
   const { username, password } = req.body;
-  try {
-    const user = db.prepare("SELECT * FROM users WHERE email = ?").get(username);
-    if (user && await bcrypt.compare(password, user.password)) {
-      req.session.user = user;
-      return res.redirect("/dashboard");
-    } else {
-      return res.render("index", { message: "Invalid email or password" });
-    }
-  } catch (err) {
+  const result = usersModel.authenticateUser([username, password]);
+  if (result && result.length > 0) {
+    req.session.user = result[0];
+    return res.redirect("/dashboard");
+  } else {
     return res.render("index", { message: "Invalid email or password" });
   }
 };
-
-exports.validateRegister = [
-  body("fullname").notEmpty().withMessage("Full name is required")
-    .isLength({ min: 2 }).withMessage("Name must be at least 2 characters"),
-  body("email").isEmail().withMessage("Please enter a valid email"),
-  body("password").isLength({ min: 6 }).withMessage("Password must be at least 6 characters"),
-  body("username").notEmpty().withMessage("Username is required")
-];
 
 exports.viewRegister = (req, res) => {
   res.render("register", { message: "" });
 };
 
-exports.registerUser = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.render("register", { message: errors.array()[0].msg });
-  }
+// VULNERABLE: no validation, plaintext password
+exports.registerUser = (req, res) => {
   const { fullname, username, email, password } = req.body;
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    usersModel.registerUser(fullname, username, email, hashedPassword);
+    usersModel.registerUser(fullname, username, email, password);
     res.render("index", { message: "Registration successful! Please login." });
   } catch (err) {
     res.render("register", { message: "Registration failed. Try again." });
