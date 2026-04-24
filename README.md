@@ -1,4 +1,4 @@
-Master branch is the fixed code
+Master branch is the fixed code |*|
 Vulnerable version is the vulnerable code
  
  Glow Beauty Salon - Secure Web Application
